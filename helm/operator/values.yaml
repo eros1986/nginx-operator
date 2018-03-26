@@ -1,0 +1,16 @@
+appName: operator-demo
+
+imageOperator:
+  repository: index-dev.qiniu.io/kelibrary/operator
+  tag: "201711181325"
+  pullPolicy: IfNotPresent
+
+resyncSeconds: 180
+
+serviceAccount: operator-demo
+clusterrole: operator-demo-cr
+clusterrolebinding: operator-demo-crb
+
+# Install Default RBAC roles and bindings
+rbac:
+  install: true

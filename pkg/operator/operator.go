@@ -23,36 +23,36 @@ type OperatorConfig struct {
 
 type operator struct {
 	op  k8s.OperatorInterface
-	crd *k8s.crd
+	crd *k8s.CRD
 
 	logger *log.Entry
 }
 
 func NewOperator(config *OperatorConfig) (OperatorInterface, error) {
-	KubenetesConfig, err := k8s.BuildKuberentesConfig(config.KubeConfigPath)
+	kubernetesConfig, err := k8s.BuildKuberentesConfig(config.KubeConfigPath)
 	if err != nil {
 		return nil, err
 	}
 
-	clientsets := k8s.NewClientSets(KuberentesConfig)
-	acClient, err := clientsets.GetAPIExtensionClientset()
+	clientsets := k8s.NewClientSets(kubernetesConfig)
+	aeClient, err := clientsets.GetAPIExtensionClientset()
 	if err != nil {
 		return nil, err
 	}
 
 	handlerConfig := &QiniuHandlersConfig{
-		AEClient:        aeClient,
-		KubenetesConfig: KubenetesConfig,
+		AEClient:         aeClient,
+		KubernetesConfig: kubernetesConfig,
 	}
-	handlers := NewQiqniuHandlers(handlerConfig)
+	handlers := NewQiniuHandlers(handlerConfig)
 
-	indexedOperatorConfig := &k8s.indexedOperatorConfig{
+	indexedOperatorConfig := &k8s.IndexedOperatorConfig{
 		KubeConfigPath: config.KubeConfigPath,
 		WatchNamespace: "",
 		ResyncPeriod:   config.ResyncPeriod,
-		Hanlers:        handlers,
+		Handlers:       handlers,
 	}
-	op, err := k8s.NewIndexdOperator(indexedOperatorConfig)
+	op, err := k8s.NewIndexedOperator(indexedOperatorConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -80,20 +80,21 @@ func NewOperator(config *OperatorConfig) (OperatorInterface, error) {
 }
 
 func (o *operator) Run(ctx context.Context, stopc <-chan struct{}) error {
-	// create CRD
+	// Create CRD.
 	o.logger.Info("Begin to create crd.")
 	if err := o.op.CreateCRD(o.crd); err != nil {
 		return err
 	}
 	o.logger.Info("Successfully create crd.")
 
-	//watch crd events.
+	// Watch CRD events.
 	o.logger.Info("Begin to watch events. ")
-	if err := o.op.WatchEvent(ctx, o.crd); err != nil {
+	if err := o.op.WatchEvents(ctx, o.crd); err != nil {
 		return err
 	}
 
 	<-stopc
+
 	o.logger.Info("Bye.")
 
 	return nil

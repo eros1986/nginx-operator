@@ -1,6 +1,0 @@
-kind: Qiniu
-apiVersion: example.com/v1
-metadata:
-  name: {{ .Values.appName }}
-spec:
-  name: {{ .Values.specData.name }}

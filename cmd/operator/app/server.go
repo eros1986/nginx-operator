@@ -20,10 +20,10 @@ var serverCmd = &cobra.Command{
 	Short:         "Lanch server",
 	SilenceErrors: true,
 	SilenceUsage:  true,
-	RunE: func(cmd *conbra.Command, agrs []string) error {
+	RunE: func(cmd *cobra.Command, agrs []string) error {
 		config := &operator.OperatorConfig{
-			kubeconfigPath: kubeconfig,
-			watchNamespace: watchNamespace,
+			KubeConfigPath: kubeconfig,
+			WatchNamespace: watchNamespace,
 			ResyncPeriod:   time.Duration(resyncSeconds) * time.Second,
 		}
 		operator, err := operator.NewOperator(config)
@@ -39,5 +39,10 @@ var serverCmd = &cobra.Command{
 }
 
 func init() {
-	serverCmd.Flags().StringVarP(&kubeconfig, "kubeconfig", "c", "pacht to kube config")
+	serverCmd.Flags().StringVarP(&kubeconfig, "kubeconfig", "c", "", "pacht to kube config")
+	serverCmd.Flags().StringVar(&watchNamespace, "watchNamespace", "",
+		"the namespace which operator watches")
+	serverCmd.Flags().Uint32Var(&resyncSeconds, "resyncSeconds", 30,
+		"resync seconds")
+	rootCmd.AddCommand(serverCmd)
 }

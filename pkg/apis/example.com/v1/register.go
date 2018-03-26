@@ -18,7 +18,7 @@ var (
 )
 
 func AddKnownTypes(scheme *runtime.Scheme) error {
-	schmem.AddKnownTypes(
+	scheme.AddKnownTypes(
 		schema.GroupVersion{
 			Group:   CRDGroup,
 			Version: CRDVersion,
