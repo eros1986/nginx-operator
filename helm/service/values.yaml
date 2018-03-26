@@ -1,0 +1,4 @@
+appName: nginx-operator
+
+specData:
+  name: minmin

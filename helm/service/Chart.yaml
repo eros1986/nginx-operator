@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Deploy a Qiniu crd instance.
+name: qiniu-crd-example
+version: 0.1.0
